@@ -1,0 +1,58 @@
+package com.ti2cc;
+
+import java.sql.*;
+
+public class MatriculaDAO {
+    public void inserir(Matricula m) {
+        String sql = "INSERT INTO matricula (aluno, curso) VALUES (?, ?)";
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, m.getAluno());
+            stmt.setString(2, m.getCurso());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Matricula> listar() {
+        List<Matricula> lista = new ArrayList<>();
+        String sql = "SELECT * FROM matricula";
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Matricula m = new Matricula(rs.getInt("id"), rs.getString("aluno"), rs.getString("curso"));
+                lista.add(m);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+
+    public void atualizar(Matricula m) {
+        String sql = "UPDATE matricula SET aluno = ?, curso = ? WHERE id = ?";
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, m.getAluno());
+            stmt.setString(2, m.getCurso());
+            stmt.setInt(3, m.getId());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void excluir(int id) {
+        String sql = "DELETE FROM matricula WHERE id = ?";
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
